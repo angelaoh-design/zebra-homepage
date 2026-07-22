@@ -7,17 +7,35 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="stars stars-small"></div>
+  <div class="stars stars-medium"></div>
+  <div class="stars stars-large"></div>
+  <div class="nebula nebula-1"></div>
+  <div class="nebula nebula-2"></div>
+
   <main class="card">
-    <div class="avatar">오</div>
+    <div class="avatar">
+      <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="로고">
+        <rect width="1024" height="1024" rx="190" fill="#1656f5" />
+        <rect x="180" y="100" width="160" height="824" rx="70"
+              fill="#ffffff" transform="rotate(-35 260 512)" />
+        <rect x="460" y="100" width="160" height="824" rx="70"
+              fill="#ffffff" transform="rotate(-35 540 512)" />
+        <g transform="translate(660 560) scale(7)">
+          <path d="M12 0C12 6 18 12 24 12C18 12 12 18 12 24C12 18 6 12 0 12C6 12 12 6 12 0Z" fill="#ffffff" />
+        </g>
+      </svg>
+    </div>
     <h1 class="name">오영아</h1>
     <p class="title">지브라브라더스 전략컨설팅실</p>
     <p class="tagline">헬로맥스가 잘되길 바라는 직원입니다</p>
 
-    <ul class="links">
-      <li><a href="mailto:hello@example.com">Email</a></li>
-      <li><a href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-      <li><a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-    </ul>
+    <a class="email" href="mailto:angela.oh@zbros.co.kr">angela.oh@zbros.co.kr</a>
+
+    <div class="buttons">
+      <a class="btn btn-primary" href="https://hellomax.ai/home" target="_blank" rel="noopener noreferrer">헬로맥스 홈페이지</a>
+      <a class="btn btn-secondary" href="https://pro.hellomax.ai/login" target="_blank" rel="noopener noreferrer">헬로맥스 PRO</a>
+    </div>
   </main>
 
   <footer class="footer">
