@@ -32,6 +32,12 @@
     <p class="title" data-i18n="title">지브라브라더스 전략컨설팅실</p>
     <p class="tagline" data-i18n="tagline">헬로맥스가 잘되길 바라는 직원입니다</p>
 
+    <div class="info-bar">
+      <span class="info-item" id="clock">--:--:--</span>
+      <span class="info-divider">·</span>
+      <span class="info-item" id="weather">…</span>
+    </div>
+
     <a class="email" href="mailto:angela.oh@zbros.co.kr">angela.oh@zbros.co.kr</a>
 
     <div class="buttons">
@@ -51,34 +57,91 @@
         title: "지브라브라더스 전략컨설팅실",
         tagline: "헬로맥스가 잘되길 바라는 직원입니다",
         btnHome: "헬로맥스 홈페이지",
+        seoul: "서울",
+        weatherLoading: "날씨 불러오는 중…",
+        weatherError: "날씨 정보를 불러올 수 없습니다",
       },
       en: {
         docTitle: "Oh Youngah | Profile",
         title: "Strategy Consulting Office, Zebra Brothers",
         tagline: "An employee who hopes Hellomax thrives",
         btnHome: "Hellomax Homepage",
+        seoul: "Seoul",
+        weatherLoading: "Loading weather…",
+        weatherError: "Weather unavailable",
       },
       ja: {
         docTitle: "オ・ヨンア | 自己紹介",
         title: "ゼブラブラザーズ 戦略コンサルティング室",
         tagline: "ハローマックスの成功を願う社員です",
         btnHome: "ハローマックス ホームページ",
+        seoul: "ソウル",
+        weatherLoading: "天気を読み込み中…",
+        weatherError: "天気情報を取得できません",
       },
       zh: {
         docTitle: "吴英雅 | 自我介绍",
         title: "斑马兄弟 战略咨询室",
         tagline: "希望 Hellomax 蒸蒸日上的员工",
         btnHome: "Hellomax 官网",
+        seoul: "首尔",
+        weatherLoading: "正在加载天气…",
+        weatherError: "无法获取天气信息",
       },
       fr: {
         docTitle: "Oh Youngah | Présentation",
         title: "Bureau de conseil stratégique, Zebra Brothers",
         tagline: "Une employée qui souhaite le succès de Hellomax",
         btnHome: "Site Hellomax",
+        seoul: "Séoul",
+        weatherLoading: "Chargement de la météo…",
+        weatherError: "Météo indisponible",
       },
     };
 
+    const weatherCodeText = {
+      0: { ko: "맑음", en: "Clear", ja: "晴れ", zh: "晴", fr: "Ciel clair", icon: "☀️" },
+      1: { ko: "대체로 맑음", en: "Mostly clear", ja: "概ね晴れ", zh: "大致晴朗", fr: "Plutôt dégagé", icon: "🌤️" },
+      2: { ko: "구름 조금", en: "Partly cloudy", ja: "所により曇り", zh: "多云", fr: "Partiellement nuageux", icon: "⛅" },
+      3: { ko: "흐림", en: "Overcast", ja: "曇り", zh: "阴天", fr: "Couvert", icon: "☁️" },
+      45: { ko: "안개", en: "Fog", ja: "霧", zh: "雾", fr: "Brouillard", icon: "🌫️" },
+      48: { ko: "안개", en: "Fog", ja: "霧", zh: "雾", fr: "Brouillard", icon: "🌫️" },
+      51: { ko: "이슬비", en: "Light drizzle", ja: "霧雨", zh: "小雨", fr: "Bruine légère", icon: "🌦️" },
+      53: { ko: "이슬비", en: "Drizzle", ja: "霧雨", zh: "毛毛雨", fr: "Bruine", icon: "🌦️" },
+      55: { ko: "이슬비", en: "Dense drizzle", ja: "強い霧雨", zh: "大毛毛雨", fr: "Forte bruine", icon: "🌦️" },
+      61: { ko: "비", en: "Light rain", ja: "小雨", zh: "小雨", fr: "Pluie légère", icon: "🌧️" },
+      63: { ko: "비", en: "Rain", ja: "雨", zh: "中雨", fr: "Pluie", icon: "🌧️" },
+      65: { ko: "강한 비", en: "Heavy rain", ja: "大雨", zh: "大雨", fr: "Forte pluie", icon: "🌧️" },
+      71: { ko: "눈", en: "Light snow", ja: "小雪", zh: "小雪", fr: "Neige légère", icon: "🌨️" },
+      73: { ko: "눈", en: "Snow", ja: "雪", zh: "中雪", fr: "Neige", icon: "🌨️" },
+      75: { ko: "폭설", en: "Heavy snow", ja: "大雪", zh: "大雪", fr: "Forte neige", icon: "🌨️" },
+      80: { ko: "소나기", en: "Rain showers", ja: "にわか雨", zh: "阵雨", fr: "Averses", icon: "🌦️" },
+      81: { ko: "소나기", en: "Rain showers", ja: "にわか雨", zh: "阵雨", fr: "Averses", icon: "🌦️" },
+      82: { ko: "강한 소나기", en: "Violent showers", ja: "激しいにわか雨", zh: "强阵雨", fr: "Fortes averses", icon: "🌧️" },
+      95: { ko: "뇌우", en: "Thunderstorm", ja: "雷雨", zh: "雷暴", fr: "Orage", icon: "⛈️" },
+      96: { ko: "뇌우", en: "Thunderstorm", ja: "雷雨", zh: "雷暴", fr: "Orage", icon: "⛈️" },
+      99: { ko: "강한 뇌우", en: "Severe thunderstorm", ja: "激しい雷雨", zh: "强雷暴", fr: "Orage violent", icon: "⛈️" },
+    };
+
+    let currentLang = "ko";
+    let weatherState = { status: "loading" };
+
+    function renderWeather() {
+      const el = document.getElementById("weather");
+      const t = translations[currentLang] || translations.ko;
+      if (weatherState.status === "loading") {
+        el.textContent = t.weatherLoading;
+      } else if (weatherState.status === "error") {
+        el.textContent = t.weatherError;
+      } else {
+        const info = weatherCodeText[weatherState.code] || weatherCodeText[0];
+        const desc = info[currentLang] || info.en;
+        el.textContent = `${t.seoul} ${info.icon} ${Math.round(weatherState.temp)}°C ${desc}`;
+      }
+    }
+
     function applyLanguage(lang) {
+      currentLang = lang;
       const t = translations[lang] || translations.ko;
       document.title = t.docTitle;
       document.documentElement.lang = lang;
@@ -89,11 +152,41 @@
       document.querySelectorAll(".lang-btn").forEach((btn) => {
         btn.classList.toggle("is-active", btn.dataset.lang === lang);
       });
+      renderWeather();
     }
 
     document.querySelectorAll(".lang-btn").forEach((btn) => {
       btn.addEventListener("click", () => applyLanguage(btn.dataset.lang));
     });
+
+    function updateClock() {
+      const now = new Date().toLocaleTimeString("en-GB", {
+        timeZone: "Asia/Seoul",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      document.getElementById("clock").textContent = `🕐 ${now}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    fetch(
+      "https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current_weather=true&timezone=Asia%2FSeoul"
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        weatherState = {
+          status: "ok",
+          temp: data.current_weather.temperature,
+          code: data.current_weather.weathercode,
+        };
+        renderWeather();
+      })
+      .catch(() => {
+        weatherState = { status: "error" };
+        renderWeather();
+      });
   </script>
 </body>
 </html>
